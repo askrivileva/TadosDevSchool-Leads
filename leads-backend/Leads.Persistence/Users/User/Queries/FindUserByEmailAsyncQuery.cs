@@ -21,7 +21,7 @@
         public override Task<User> AskAsync(FindByEmail criterion, CancellationToken cancellationToken = default)
         {
             return AsyncQuery.SingleOrDefaultAsync(
-                x => x.DeletedAtUtc == null && x.Email == criterion.Email,
+                x => x.Email == criterion.Email,
                 cancellationToken);
         }
     }

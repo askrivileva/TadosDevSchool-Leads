@@ -1,13 +1,14 @@
 ﻿namespace Leads.WebApi.DI.Autofac.Modules
 {
+    using Application.Persistence;
     using global::Autofac;
+    using global::Autofac.Extensions.Registration.OpenGenericTypes;
     using global::Autofac.Extensions.TypedFactories;
     using Infrastructure.Queries.Abstractions;
     using Infrastructure.Queries.Builders.Abstractions;
     using Infrastructure.Queries.Builders.Default;
     using Infrastructure.Queries.Factories.Abstractions;
     using Persistence;
-    using Persistence.Common.Queries;
 
 
     public class QueriesModule : Module
@@ -15,18 +16,15 @@
         protected override void Load(ContainerBuilder builder)
         {
             builder
-                .RegisterGeneric(typeof(FindAllObjectsWithIdAsyncQuery<>))
-                .AsImplementedInterfaces()
+                .RegisterAssemblyOpenGenericTypes(typeof(PersistenceAssemblyMarker).Assembly)
+                .ThatImplementsOpenGeneric(typeof(IQuery<,>))
+                .As(typeof(IQuery<,>))
                 .InstancePerDependency();
-
+            
             builder
-                .RegisterGeneric(typeof(FindObjectWithIdByIdQuery<>))
-                .AsImplementedInterfaces()
-                .InstancePerDependency();
-
-            builder
-                .RegisterGeneric(typeof(FindObjectWithIdByIdAsyncQuery<>))
-                .AsImplementedInterfaces()
+                .RegisterAssemblyOpenGenericTypes(typeof(PersistenceAssemblyMarker).Assembly)
+                .ThatImplementsOpenGeneric(typeof(IAsyncQuery<,>))
+                .As(typeof(IAsyncQuery<,>))
                 .InstancePerDependency();
 
             builder
@@ -36,6 +34,16 @@
             
             builder
                 .RegisterAssemblyTypes(typeof(PersistenceAssemblyMarker).Assembly)
+                .AsClosedTypesOf(typeof(IAsyncQuery<,>))
+                .InstancePerDependency();
+            
+            builder
+                .RegisterAssemblyTypes(typeof(WebApiApplicationPersistenceAssemblyMarker).Assembly)
+                .AsClosedTypesOf(typeof(IQuery<,>))
+                .InstancePerDependency();
+            
+            builder
+                .RegisterAssemblyTypes(typeof(WebApiApplicationPersistenceAssemblyMarker).Assembly)
                 .AsClosedTypesOf(typeof(IAsyncQuery<,>))
                 .InstancePerDependency();
 

@@ -1,6 +1,7 @@
 ﻿namespace Leads.WebApi.Application.Areas.Api.Account.Requests.SignIn
 {
     using FluentValidation;
+    using FluentValidation.Validators;
     using Infrastructure.Requests;
 
 
@@ -16,7 +17,7 @@
     {
         public SignInRequestValidator()
         {
-            RuleFor(x => x.Email).NotEmpty().EmailAddress();
+            RuleFor(x => x.Email).NotEmpty().EmailAddress(EmailValidationMode.AspNetCoreCompatible);
             RuleFor(x => x.Password).NotEmpty();
         }
     }

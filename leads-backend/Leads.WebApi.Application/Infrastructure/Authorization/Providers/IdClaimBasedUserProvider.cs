@@ -1,15 +1,15 @@
 ﻿namespace Leads.WebApi.Application.Infrastructure.Authorization.Providers
 {
     using System;
-    using System.Security.Claims;
+    using System.Security.Claims;using Domain.Common;
+    using Domain.Common.Queries.Criteria.Extensions;
     using global::Infrastructure.Domain.Entities.Abstractions;
     using global::Infrastructure.Queries.Builders.Abstractions;
-    using global::Infrastructure.Queries.Criteria.Common.Extensions;
     using Microsoft.AspNetCore.Http;
 
 
     public class IdClaimBasedUserProvider<TUser> : UserProviderBase<TUser>
-        where TUser : class, IEntity, new()
+        where TUser : class, IEntity, IDummyDeletable, new()
     {
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IQueryBuilder _queryBuilder;
@@ -43,7 +43,7 @@
             if (!long.TryParse(nameIdentifierClaim.Value, out long id))
                 return default;
 
-            _user = _queryBuilder.FindById<TUser>(id);
+            _user = _queryBuilder.FindNotDeletedById<TUser>(id);
 
             return _user;
         }

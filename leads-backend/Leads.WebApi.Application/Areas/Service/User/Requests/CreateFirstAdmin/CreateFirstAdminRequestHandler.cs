@@ -4,10 +4,8 @@
     using System.Threading;
     using System.Threading.Tasks;
     using Domain.Users.Enums;
-    using Domain.Users.Exceptions;
     using Domain.Users.Objects.Entities;
     using Domain.Users.Services.Abstractions;
-    using Infrastructure.Exceptions;
     using Infrastructure.Requests.Handlers;
 
 
@@ -26,16 +24,9 @@
             CreateFirstAdminRequest request,
             CancellationToken cancellationToken = default)
         {
-            try
-            {
-                var user = new User(request.Email.Trim(), request.Password, UserRoles.Administrator);
+            var user = new User(request.Email.Trim(), request.Password, UserRoles.Administrator);
 
-                await _userService.CreateAsync(user, cancellationToken);
-            }
-            catch (UserAlreadyExistsException)
-            {
-                throw new ApiException(ErrorCodes.UserAlreadyExists, "User with email already exists");
-            }
+            await _userService.CreateAsync(user, cancellationToken);
         }
     }
 }
